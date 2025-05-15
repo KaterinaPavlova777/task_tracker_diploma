@@ -5,16 +5,17 @@ from users.models import User
 
 
 def get_users_for_imp_task():
-    free_employee = User.objects.annotate(
-        tasks_count=Count('tasks')
-    ).order_by('tasks_count').first()
+    free_employee = (
+        User.objects.annotate(tasks_count=Count("tasks"))
+        .order_by("tasks_count")
+        .first()
+    )
 
     if not free_employee:
         return []
 
     important_tasks = Task.objects.filter(
-        status='created',
-        parent__status='in_progress'
+        status="created", parent__status="in_progress"
     )
 
     result = []
@@ -27,9 +28,11 @@ def get_users_for_imp_task():
             if tasks_count <= free_employee.tasks_count + 2:
                 candidate = performer
 
-        result.append({
-            'task': task,
-            'candidate': candidate,
-        })
+        result.append(
+            {
+                "task": task,
+                "candidate": candidate,
+            }
+        )
 
     return result

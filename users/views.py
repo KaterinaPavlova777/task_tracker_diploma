@@ -1,12 +1,23 @@
 from django.db.models import Count
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    DestroyAPIView,
+)
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 
 from users.models import User
 from users.permissions import IsOwnerOrAdmin
-from users.serializers import UserRegistrationSerializer, UserSerializer, UserUpdateSerializer, UserWithTaskSerializer, \
-    TaskCandidateSerializer
+from users.serializers import (
+    UserRegistrationSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+    UserWithTaskSerializer,
+    TaskCandidateSerializer,
+)
 from users.services import get_users_for_imp_task
 
 
@@ -47,9 +58,9 @@ class UserWithTaskListView(ListAPIView):
     serializer_class = UserWithTaskSerializer
 
     def get_queryset(self):
-        return User.objects.annotate(
-            tasks_count=Count('tasks')
-        ).order_by('-tasks_count')
+        return User.objects.annotate(tasks_count=Count("tasks")).order_by(
+            "-tasks_count"
+        )
 
 
 class CandidateForTaskListView(ListAPIView):

@@ -1,4 +1,10 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveAPIView,
+    CreateAPIView,
+    UpdateAPIView,
+    DestroyAPIView,
+)
 
 from tasks.models import Task
 from tasks.permissions import CheckAccessLvl, AccessLvlOrIsPerformer
@@ -37,7 +43,4 @@ class ImportantTaskListView(ListAPIView):
     serializer_class = TaskSerializer
 
     def get_queryset(self):
-        return Task.objects.filter(
-            status='created',
-            parent__status='in_progress'
-        )
+        return Task.objects.filter(status="created", parent__status="in_progress")

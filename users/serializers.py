@@ -7,14 +7,11 @@ from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True,
-        validators=[validate_password]
-    )
+    password = serializers.CharField(write_only=True, validators=[validate_password])
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = "__all__"
 
 
 class UserWithTaskSerializer(serializers.ModelSerializer):
@@ -23,26 +20,23 @@ class UserWithTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'tasks', 'tasks_count']
+        fields = ["username", "tasks", "tasks_count"]
 
     def get_tasks_count(self, obj: User):
         return obj.tasks.count()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True,
-        validators=[validate_password]
-    )
+    password = serializers.CharField(write_only=True, validators=[validate_password])
 
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ["username", "password"]
         validators = [validate_password]
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get('username', instance.username)
-        password = validated_data.get('password')
+        instance.username = validated_data.get("username", instance.username)
+        password = validated_data.get("password")
         if password:
             instance.password = password
         instance.save()
@@ -50,25 +44,27 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password]
+    )
     password_confirm = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password_confirm')
+        fields = ("username", "password", "password_confirm")
 
     def validate(self, data):
-        if data['password'] != data['password_confirm']:
+        if data["password"] != data["password_confirm"]:
             raise ValidationError("The passwords don't match.")
         return data
 
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
+        validated_data.pop("password_confirm")
 
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email='',
-            password=validated_data['password'],
+            username=validated_data["username"],
+            email="",
+            password=validated_data["password"],
         )
         return user
 
@@ -76,9 +72,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class LimitUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ["id", "username"]
 
 
 class TaskCandidateSerializer(serializers.Serializer):
     task = TaskSerializer()
-    performer = LimitUserSerializer(source='candidate')
+    performer = LimitUserSerializer(source="candidate")
