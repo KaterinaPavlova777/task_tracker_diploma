@@ -11,11 +11,11 @@ class UsersTestCase(APITestCase):
 
     def setUp(self):
         self.admin_user = User.objects.create_superuser(
-            username="admin",
+            full_name="admin",
             password="adminpass123",
         )
         self.regular_user = User.objects.create_user(
-            username="regular",
+            full_name="regular",
             password="regularpass123",
         )
         self.task = Task.objects.create(
@@ -31,13 +31,13 @@ class UsersTestCase(APITestCase):
 
     def test_UserRegistration(self):
         data = {
-            "username": "newuser",
+            "full_name": "newuser",
             "password": "testpass123",
             "password_confirm": "testpass123",
         }
         response = self.client.post("/users/register/", data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(User.objects.filter(username="newuser").exists())
+        self.assertTrue(User.objects.filter(full_name="newuser").exists())
 
     def test_UserListView(self):
         self.authenticate(self.admin_user)
@@ -52,24 +52,24 @@ class UsersTestCase(APITestCase):
 
     def test_UserUpdateView(self):
         self.authenticate(self.admin_user)
-        data = {"username": "updatedname"}
+        data = {"full_name": "updatedname"}
         response = self.client.patch(f"/users/update/{self.regular_user.pk}", data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.regular_user.refresh_from_db()
-        self.assertEqual(self.regular_user.username, "updatedname")
+        self.assertEqual(self.regular_user.full_name, "updatedname")
 
     def test_UserDeleteView(self):
         self.authenticate(self.admin_user)
         user_to_delete = User.objects.create_user(
-            username="delete_me", password="delpass123"
+            full_name="delete_me", password="delpass123"
         )
         response = self.client.delete(f"/users/delete/{user_to_delete.pk}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(User.objects.filter(pk=user_to_delete.pk).exists())
 
     def test_UserWithTaskListView(self):
-        user1 = User.objects.create_user(username="user1", password="p1")
-        user2 = User.objects.create_user(username="user2", password="p2")
+        user1 = User.objects.create_user(full_name="user1", password="p1")
+        user2 = User.objects.create_user(full_name="user2", password="p2")
         Task.objects.create(title="T1", performer=user1, deadline="2025-06-15")
         Task.objects.create(title="T2", performer=user1, deadline="2025-06-15")
         Task.objects.create(title="T3", performer=user2, deadline="2025-06-15")
@@ -77,8 +77,8 @@ class UsersTestCase(APITestCase):
         self.authenticate(self.admin_user)
         response = self.client.get("/users/tasks/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]["username"], user1.username)
-        self.assertEqual(response.data[1]["username"], user2.username)
+        self.assertEqual(response.data[0]["full_name"], user1.full_name)
+        self.assertEqual(response.data[1]["full_name"], user2.full_name)
 
     def test_CandidateForTaskListView_returns_candidates_for_important_task(self):
         from users.services import get_users_for_imp_task

@@ -20,7 +20,7 @@ class UserWithTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "tasks", "tasks_count"]
+        fields = ["full_name", "tasks", "tasks_count"]
 
     def get_tasks_count(self, obj: User):
         return obj.tasks.count()
@@ -31,11 +31,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "password"]
+        fields = ["full_name", "password"]
         validators = [validate_password]
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get("username", instance.username)
+        instance.username = validated_data.get("full_name", instance.username)
         password = validated_data.get("password")
         if password:
             instance.password = password
@@ -51,7 +51,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "password", "password_confirm")
+        fields = ("full_name", "password", "password_confirm")
 
     def validate(self, data):
         if data["password"] != data["password_confirm"]:
@@ -62,7 +62,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop("password_confirm")
 
         user = User.objects.create_user(
-            username=validated_data["username"],
+            username=validated_data["full_name"],
             email="",
             password=validated_data["password"],
         )
@@ -72,7 +72,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class LimitUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username"]
+        fields = ["id", "full_name"]
 
 
 class TaskCandidateSerializer(serializers.Serializer):
