@@ -5,13 +5,13 @@
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/task-tracker.git
+git clone https://github.com/KaterinaPavlova777/task_tracker_diploma.git
 ```
 
 2. Navigate to the project directory:
 
 ```
-cd task-tracker
+cd task_tracker_diploma
 ```
 
 3. Set up the environment variables:
