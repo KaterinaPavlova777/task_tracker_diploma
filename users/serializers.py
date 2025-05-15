@@ -51,7 +51,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("full_name", "password", "password_confirm")
+        fields = ("username", "full_name", "password", "password_confirm")
 
     def validate(self, data):
         if data["password"] != data["password_confirm"]:
@@ -62,7 +62,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop("password_confirm")
 
         user = User.objects.create_user(
-            username=validated_data["full_name"],
+            username=validated_data["username"],
+            full_name=validated_data["full_name"],
             email="",
             password=validated_data["password"],
         )

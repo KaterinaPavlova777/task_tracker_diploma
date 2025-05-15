@@ -11,11 +11,13 @@ class UsersTestCase(APITestCase):
 
     def setUp(self):
         self.admin_user = User.objects.create_superuser(
-            full_name="admin",
+            username="admin",
+            full_name="bob1",
             password="adminpass123",
         )
         self.regular_user = User.objects.create_user(
-            full_name="regular",
+            username="regular",
+            full_name="bob2",
             password="regularpass123",
         )
         self.task = Task.objects.create(
@@ -31,13 +33,14 @@ class UsersTestCase(APITestCase):
 
     def test_UserRegistration(self):
         data = {
-            "full_name": "newuser",
+            "username": "newuser",
+            "full_name": "Bob3",
             "password": "testpass123",
             "password_confirm": "testpass123",
         }
         response = self.client.post("/users/register/", data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(User.objects.filter(full_name="newuser").exists())
+        self.assertTrue(User.objects.filter(full_name="Bob3").exists())
 
     def test_UserListView(self):
         self.authenticate(self.admin_user)
@@ -61,15 +64,15 @@ class UsersTestCase(APITestCase):
     def test_UserDeleteView(self):
         self.authenticate(self.admin_user)
         user_to_delete = User.objects.create_user(
-            full_name="delete_me", password="delpass123"
+            username='delete_me', full_name="Bob4", password="delpass123"
         )
         response = self.client.delete(f"/users/delete/{user_to_delete.pk}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(User.objects.filter(pk=user_to_delete.pk).exists())
 
     def test_UserWithTaskListView(self):
-        user1 = User.objects.create_user(full_name="user1", password="p1")
-        user2 = User.objects.create_user(full_name="user2", password="p2")
+        user1 = User.objects.create_user(username="user1", full_name="Bob4", password="p1")
+        user2 = User.objects.create_user(username="user2", full_name="Bob5", password="p2")
         Task.objects.create(title="T1", performer=user1, deadline="2025-06-15")
         Task.objects.create(title="T2", performer=user1, deadline="2025-06-15")
         Task.objects.create(title="T3", performer=user2, deadline="2025-06-15")
